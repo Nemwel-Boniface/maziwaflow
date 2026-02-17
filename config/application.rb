@@ -23,5 +23,9 @@ module Maziwaflow
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    # Ensure that all new tables use UUIDs as primary keys by default
+    config.generators do |g|
+      g.orm :active_record, primary_key_type: :uuid
+    end
   end
 end
