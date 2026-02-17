@@ -68,3 +68,8 @@ group :test do
 end
 
 gem "dotenv-rails", groups: [ :development, :test ]
+
+# These are authentication and authorisation gems that we will be using
+gem "devise", "~> 5.0"
+gem "rolify", "~> 6.0"
+gem "cancancan", "~> 3.6"
