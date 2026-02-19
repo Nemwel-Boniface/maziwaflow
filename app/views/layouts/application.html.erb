@@ -18,12 +18,38 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <%# Include compiled CSS & JS from app/assets/builds (Tailwind & JS) %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="min-h-screen bg-slate-50 text-slate-900">
+    <header class="bg-white border-b border-slate-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white text-lg">🥛</span>
+          <span class="text-sm font-semibold tracking-tight text-slate-900">MaziwaFlow</span>
+        </div>
+
+        <% if user_signed_in? %>
+          <div class="flex items-center space-x-3">
+            <span class="hidden sm:inline text-sm text-slate-600">Hello, <%= current_user.name.presence || current_user.email %></span>
+            <%= button_to "Log out", destroy_user_session_path, method: :delete, data: { turbo: false, confirm: "Are you sure you want to log out?" }, class: "cursor-pointer inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 text-slate-700 bg-white hover:bg-slate-50" %>
+          </div>
+        <% end %>
+      </div>
+    </header>
+
+    <% if notice.present? %>
+      <div class="bg-green-50 border-b border-green-200 text-green-800 px-4 py-3 text-sm"><%= notice %></div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="bg-red-50 border-b border-red-200 text-red-800 px-4 py-3 text-sm"><%= alert %></div>
+    <% end %>
+
+    <main>
+      <%= yield %>
+    </main>
   </body>
 </html>

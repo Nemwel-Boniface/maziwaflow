@@ -1,0 +1,73 @@
+<div class="py-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">Team Management</h1>
+        <p class="text-sm text-slate-600">Manage permissions and account access for the milk shop team.</p>
+      </div>
+    </div>
+
+    <div class="bg-white shadow-sm border border-slate-200 rounded-2xl overflow-hidden">
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">User</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Roles</th>
+            <th class="px-6 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-slate-100">
+          <% @users.each do |user| %>
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex flex-col">
+                  <span class="text-sm font-medium text-slate-900"><%= user.name.presence || "Unnamed Staff" %></span>
+                  <span class="text-xs text-slate-500"><%= user.email %></span>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex gap-1">
+                  <% user.roles.each do |role| %>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                      <%= role.name.capitalize %>
+                    </span>
+                  <% end %>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <% if user.active? %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Active</span>
+                <% else %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactive</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                <div class="flex justify-end gap-2">
+                  <%# Toggle Admin Button - Disabled if User is Inactive %>
+                  <%= button_to toggle_admin_admin_user_path(user), 
+                            method: :patch, 
+                            data: { turbo: false },
+                            disabled: !user.active?,
+                            class: "cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all " \
+                                    "#{!user.active? ? 'opacity-50 cursor-not-allowed bg-slate-100 text-slate-400 border-slate-200' : 
+                                        (user.has_role?(:admin) ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50')}" do %>
+                    <%= user.has_role?(:admin) ? "Demote" : "Make Admin" %>
+                  <% end %>
+
+                  <%# Toggle Active Button %>
+                  <%= button_to toggle_active_admin_user_path(user), 
+                                method: :patch, 
+                                data: { turbo: false },
+                                class: "cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all #{user.active? ? 'border-red-200 bg-red-50 text-red-700 hover:bg-red-100' : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}" do %>
+                    <%= user.active? ? "Deactivate" : "Activate" %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
