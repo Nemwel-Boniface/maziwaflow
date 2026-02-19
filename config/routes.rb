@@ -2,6 +2,15 @@ Rails.application.routes.draw do
   get "dashboard/index"
   devise_for :users
 
+  namespace :admin do
+    resources :users, only: [ :index ] do
+      member do
+        patch :toggle_admin
+        patch :toggle_active
+      end
+    end
+  end
+
   devise_scope :user do
     authenticated :user do
       root to: "dashboard#index", as: :authenticated_root

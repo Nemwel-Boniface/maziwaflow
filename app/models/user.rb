@@ -9,6 +9,11 @@ class User < ApplicationRecord
   # Callbacks
   after_create :assign_default_role
 
+  # Only allow login for active users
+  def active_for_authentication?
+    super && active?
+  end
+
   private
 
   def assign_default_role
