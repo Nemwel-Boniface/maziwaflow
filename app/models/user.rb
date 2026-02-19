@@ -6,6 +6,9 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
 
+  # Associations
+  has_many :sales, dependent: :nullify
+
   # Callbacks
   after_create :assign_default_role
 
