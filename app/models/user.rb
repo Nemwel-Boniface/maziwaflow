@@ -14,6 +14,11 @@ class User < ApplicationRecord
     super && active?
   end
 
+  # Provide a clearer Devise message when a user is inactive
+  def inactive_message
+    active? ? super : :inactive
+  end
+
   private
 
   def assign_default_role
