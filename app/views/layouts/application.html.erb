@@ -18,14 +18,19 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%# Include compiled CSS & JS from app/assets/builds (Tailwind & JS) %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
 
   </head>
 
-  <body>
-    <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>
+  <body class="min-h-screen bg-slate-50 text-slate-900">
+    <% if notice.present? %>
+      <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 text-sm"><%= notice %></div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm"><%= alert %></div>
+    <% end %>
     <%= yield %>
   </body>
 </html>
