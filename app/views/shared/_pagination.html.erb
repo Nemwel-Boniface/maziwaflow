@@ -1,0 +1,41 @@
+<% if total_pages > 1 %>
+  <div class="flex items-center justify-between mt-6 px-4 py-3 bg-white border-t border-slate-100 sm:px-6">
+    <div class="flex flex-1 justify-between sm:hidden">
+      <% if current_page > 1 %>
+        <%= link_to "Previous", url_for(params.to_unsafe_h.merge(param_name => current_page - 1)), class: "relative inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50" %>
+      <% end %>
+      <% if current_page < total_pages %>
+        <%= link_to "Next", url_for(params.to_unsafe_h.merge(param_name => current_page + 1)), class: "relative ml-3 inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50" %>
+      <% end %>
+    </div>
+    
+    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+      <div>
+        <p class="text-sm text-slate-500 font-medium">
+          Page <span class="font-bold text-slate-900"><%= current_page %></span> of <span class="font-bold text-slate-900"><%= total_pages %></span>
+        </p>
+      </div>
+      <div>
+        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm gap-1" aria-label="Pagination">
+          <%# First %>
+          <% if current_page > 1 %>
+            <%= link_to 'First', url_for(params.to_unsafe_h.merge(param_name => 1)), class: "relative inline-flex items-center rounded-l-md px-3 py-2 text-xs font-bold text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 transition-colors" %>
+            <%= link_to 'Previous', url_for(params.to_unsafe_h.merge(param_name => current_page - 1)), class: "relative inline-flex items-center px-3 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors" %>
+          <% else %>
+            <button disabled class="relative inline-flex items-center rounded-l-md px-3 py-2 text-xs font-bold text-slate-300 bg-slate-50 border border-slate-100 cursor-not-allowed">First</button>
+            <button disabled class="relative inline-flex items-center px-3 py-2 text-xs font-bold text-slate-300 bg-slate-50 border border-slate-100 cursor-not-allowed">Previous</button>
+          <% end %>
+
+          <%# Next %>
+          <% if current_page < total_pages %>
+            <%= link_to 'Next', url_for(params.to_unsafe_h.merge(param_name => current_page + 1)), class: "relative inline-flex items-center px-3 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors" %>
+            <%= link_to 'Last', url_for(params.to_unsafe_h.merge(param_name => total_pages)), class: "relative inline-flex items-center rounded-r-md px-3 py-2 text-xs font-bold text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 transition-colors" %>
+          <% else %>
+            <button disabled class="relative inline-flex items-center px-3 py-2 text-xs font-bold text-slate-300 bg-slate-50 border border-slate-100 cursor-not-allowed">Next</button>
+            <button disabled class="relative inline-flex items-center rounded-r-md px-3 py-2 text-xs font-bold text-slate-300 bg-slate-50 border border-slate-100 cursor-not-allowed">Last</button>
+          <% end %>
+        </nav>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -24,39 +24,27 @@
       <tbody class="bg-white divide-y divide-slate-100">
         <% @customers.each do |customer| %>
           <tr class="hover:bg-slate-50 transition-colors">
-            <%# Status Badge %>
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= customer.active ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-400' %>">
                 <%= customer.active ? 'Active' : 'Inactive' %>
               </span>
             </td>
-            
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 hover:underline">
               <%= link_to customer.name, customer_path(customer) %> 
             </td>
-            
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-              <%= customer.phone_number.presence || "-" %>
-            </td>
-            
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500"><%= customer.phone_number.presence || "-" %></td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold <%= customer.balance > 0 ? 'text-red-600' : 'text-emerald-600' %>">
               <%= number_to_currency(customer.balance, unit: "KES ") %>
             </td>
-
-            <%# Actions Column %>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
               <% if customer.active && customer.balance > 0 %>
-                <%# Locked state: Cannot deactivate because of balance %>
                 <span class="text-slate-300 cursor-not-allowed" title="Cannot deactivate: Balance must be 0">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </span>
               <% else %>
-                <%= button_to toggle_active_customer_path(customer), 
-                    method: :patch, 
-                    class: "text-slate-400 hover:text-blue-600 transition-colors",
-                    data: { turbo_confirm: "Switch status for #{customer.name}?" } do %>
+                <%= button_to toggle_active_customer_path(customer), method: :patch, class: "text-slate-400 hover:text-blue-600 transition-colors" do %>
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                   </svg>
@@ -65,13 +53,10 @@
             </td>
           </tr>
         <% end %>
-        <% if @customers.none? %>
-          <tr>
-            <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-500">No customers found.</td>
-          </tr>
-        <% end %>
       </tbody>
     </table>
     </div>
+    <%# Pagination Call %>
+    <%= render 'shared/pagination', total_pages: @total_pages, current_page: @page, param_name: :page %>
   </div>
 </div>

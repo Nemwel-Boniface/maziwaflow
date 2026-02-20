@@ -132,6 +132,7 @@
           </table>
         </div>
       </div>
+      <%= render 'shared/pagination', total_pages: @sales_total_pages, current_page: @sales_page, param_name: :sales_page %>
     </div>
 
     <%# Recent Payments List %>
@@ -168,6 +169,7 @@
           </table>
         </div>
       </div>
+      <%= render 'shared/pagination', total_pages: @payments_total_pages, current_page: @payments_page, param_name: :payments_page %>
     </div>
   </div>
 </div>
