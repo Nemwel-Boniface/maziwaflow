@@ -37,29 +37,47 @@
     </div>
 
     <%# Liters Chart Card %>
-    <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-sm font-bold text-slate-800">Milk Delivery History (Liters)</h2>
+    <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm overflow-hidden" data-controller="chart-toggle">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+        <h2 class="text-sm font-bold text-slate-800">Milk Delivery History</h2>
         <span class="text-xs text-slate-400 font-medium">Last 30 Days</span>
-      </div>
-      
-      <%# We set a max-height and min-height here to keep it in the box and not spill outside %>
-      <div class="w-full relative min-h-[250px]">
+        </div>
+
+        <%# The Cool Dropdown %>
+        <div class="relative inline-block text-left">
+        <select 
+            data-action="change->chart-toggle#switch" 
+            class="block w-full pl-3 pr-10 py-1.5 text-xs font-semibold border-slate-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md bg-slate-50 text-slate-600 cursor-pointer"
+        >
+            <option value="line">Line Chart (Trend)</option>
+            <option value="column">Column Chart (Daily Totals)</option>
+        </select>
+        </div>
+    </div>
+    
+    <div class="w-full relative min-h-[250px]">
+        <%# The Line Chart (Visible by default) %>
+        <div data-chart-toggle-target="chart" data-chart-type="line">
         <%= line_chart @liters_history, 
             colors: ["#3b82f6"], 
             points: true, 
-            curve: true,
             height: "250px",
-            prefix: "", 
             suffix: " L",
-            empty: "No data recorded for this period",
-            library: {
-              chart: { sparkline: { enabled: false } },
-              stroke: { width: 3, curve: 'smooth' },
-              xaxis: { labels: { show: true } }
-            }
+            library: { stroke: { width: 3, curve: 'smooth' } } 
         %>
-      </div>
+        </div>
+
+        <%# The Column Chart (Hidden by default) %>
+        <div data-chart-toggle-target="chart" data-chart-type="column" class="hidden">
+        <%= column_chart @liters_history, 
+            colors: ["#60a5fa"], 
+            height: "250px",
+            suffix: " L",
+            library: { plotOptions: { bar: { borderRadius: 4 } } }
+        %>
+        </div>
+    </div>
     </div>
   </div>
 
