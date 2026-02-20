@@ -22,7 +22,7 @@
         <% @sales.each do |sale| %>
           <tr class="hover:bg-slate-50">
             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500"><%= sale.created_at.strftime("%b %d, %H:%M") %></td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900"><%= sale.customer.name %></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900"><%= link_to sale.customer.name, customer_path(sale.customer) %></td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600"><%= sale.liters %> L</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-slate-900">
               <%= number_to_currency(sale.total_amount, unit: "") %>

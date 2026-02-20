@@ -21,7 +21,7 @@
       <tbody class="bg-white divide-y divide-slate-100">
         <% @customers.each do |customer| %>
           <tr class="hover:bg-slate-50 transition-colors">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900"><%= customer.name %></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 underlined"><%= link_to customer.name, customer_path(customer) %> </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500"><%= customer.phone_number.presence || "-" %></td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold <%= customer.balance > 0 ? 'text-red-600' : 'text-emerald-600' %>">
               <%= number_to_currency(customer.balance, unit: "KES ") %>
