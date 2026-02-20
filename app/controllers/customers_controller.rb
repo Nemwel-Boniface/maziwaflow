@@ -6,12 +6,18 @@ class CustomersController < ApplicationController
   end
 
   def toggle_active
-    customer = Customer.find(params[:id])
-    # Toggling the boolean value
-    if customer.update(active: !customer.active)
-      redirect_to customers_path, notice: "Updated active status for #{customer.name}."
+    @customer = Customer.find(params[:id])
+
+    # If trying to DEACTIVATE (current is true) while they owe money
+    if @customer.active && @customer.balance > 0
+      redirect_to customer_path(@customer), alert: "Cannot deactivate customer with an outstanding balance of KES #{@customer.balance}."
+      return
+    end
+
+    if @customer.update(active: !@customer.active)
+      redirect_back fallback_location: customers_path, notice: "Status updated for #{@customer.name}."
     else
-      redirect_to customers_path, alert: "Could not update active status."
+      redirect_back fallback_location: customers_path, alert: "Update failed."
     end
   end
 
