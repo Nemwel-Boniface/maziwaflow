@@ -1,0 +1,48 @@
+<div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+  <div class="sm:flex sm:items-center sm:justify-between mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">Payment Logs</h1>
+      <p class="mt-2 text-sm text-slate-600">Total history of all cash and digital collections.</p>
+    </div>
+    <div class="mt-4 sm:mt-0">
+      <%= link_to "Receive New Payment", new_payment_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors" %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow border border-slate-200 rounded-2xl overflow-hidden">
+    <table class="min-w-full divide-y divide-slate-200">
+      <thead class="bg-slate-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Date</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Customer</th>
+          <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Method</th>
+          <th class="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase">Amount (KES)</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-slate-100">
+        <% @payments.each do |payment| %>
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+              <%= payment.created_at.strftime("%b %d, %Y") %>
+              <span class="block text-xs text-slate-400"><%= payment.created_at.strftime("%H:%M") %></span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900"><%= payment.customer.name %></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+              <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded text-xs font-semibold">
+                <%= payment.payment_method %>
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-emerald-600">
+              <%= number_to_currency(payment.amount, unit: "") %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @payments.none? %>
+          <tr>
+            <td colspan="4" class="px-6 py-10 text-center text-sm text-slate-500">No payments recorded yet.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

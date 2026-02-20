@@ -1,0 +1,53 @@
+<div class="max-w-2xl mx-auto py-8 px-4">
+  <div class="mb-6">
+    <%= link_to "← Back to Dashboard", dashboard_path, class: "text-sm font-medium text-blue-600 hover:text-blue-800" %>
+  </div>
+
+  <div class="bg-white shadow-sm border border-slate-200 rounded-2xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-200 bg-emerald-600">
+      <h2 class="text-xl font-bold text-white">Receive Payment</h2>
+    </div>
+
+    <%= form_with(model: @payment, data: { turbo: false }, class: "p-6 space-y-5") do |f| %>
+      <% if @payment.errors.any? %>
+        <div class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <ul class="list-disc list-inside">
+            <% @payment.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.label :customer_id, "Select Customer", class: "block text-sm font-semibold text-slate-700 mb-1" %>
+        <%= f.collection_select :customer_id, Customer.active.ordered, :id, :name, 
+            { prompt: "Who is paying?" }, 
+            { required: true, class: "block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm shadow-sm" } %>
+        <p class="mt-1 text-xs text-slate-500">Only active customers are listed here.</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= f.label :amount, "Amount Paid (KES)", class: "block text-sm font-semibold text-slate-700 mb-1" %>
+          <%= f.number_field :amount, step: 0.01, placeholder: "0.00", required: true, class: "block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm shadow-sm" %>
+        </div>
+
+        <div>
+          <%= f.label :payment_method, "Payment Method", class: "block text-sm font-semibold text-slate-700 mb-1" %>
+          <%= f.select :payment_method, ["Cash", "M-Pesa", "Bank Transfer", "Cheque"], {}, 
+              { class: "block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm shadow-sm" } %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :notes, "Reference / Notes", class: "block text-sm font-semibold text-slate-700 mb-1" %>
+        <%= f.text_area :notes, rows: 2, placeholder: "e.g. M-Pesa transaction code or Month", class: "block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm shadow-sm" %>
+      </div>
+
+      <div class="pt-4">
+        <%= f.submit "Record Payment", class: "w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 cursor-pointer transition-all active:scale-95" %>
+      </div>
+    <% end %>
+  </div>
+</div>
