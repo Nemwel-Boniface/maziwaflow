@@ -10,5 +10,8 @@ class DashboardController < ApplicationController
 
     # Fetch the total number of staff who are not the one who is loogegd in
     @staff_count = User.where.not(id: current_user.id).count
+
+    # We need to find a way to keep track of the days cashflow
+    @payments_today = Payment.where(created_at: Time.zone.now.all_day).sum(:amount)
   end
 end
