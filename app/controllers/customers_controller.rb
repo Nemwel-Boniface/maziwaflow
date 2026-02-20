@@ -5,6 +5,18 @@ class CustomersController < ApplicationController
     @customers = Customer.ordered
   end
 
+  def show
+    @customer = Customer.find(params[:id])
+
+    # Data to be used by the charts
+    @liters_history = @customer.sales.group_by_day(:created_at, last: 30).sum(:liters)
+    @payments_history = @customer.payments.group_by_day(:created_at, last: 30).sum(:amount)
+
+    # Recent  sales and payments for the customer
+    @recent_sales = @customer.sales.order(created_at: :desc).limit(5)
+    @recent_payments = @customer.payments.order(created_at: :desc).limit(5)
+  end
+
   def new
     @customer = Customer.new
   end

@@ -5,6 +5,10 @@ class SalesController < ApplicationController
     @sales = Sale.includes(:customer).order(created_at: :desc)
   end
 
+  def show
+    @sale = Sale.find(params[:id])
+  end
+
   def new
     @sale = Sale.new
     # Pre-fill the price per liter if you have a standard rate (e.g., 60)

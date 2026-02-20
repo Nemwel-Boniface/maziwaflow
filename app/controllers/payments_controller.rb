@@ -5,6 +5,10 @@ class PaymentsController < ApplicationController
     @payments = Payment.includes(:customer, :user).order(created_at: :desc)
   end
 
+  def show
+    @payment = Payment.find(params[:id])
+  end
+
   def new
     @payment = Payment.new
     # If coming from a specific customer page later, we can pre-select them
