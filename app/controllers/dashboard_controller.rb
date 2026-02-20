@@ -1,11 +1,17 @@
 class DashboardController < ApplicationController
   load_and_authorize_resource class: :false
   def index
-    @total_customers = 0
-    @total_litres_today = 0
-    @debt_outstanding = 0
+    @total_customers = Customer.active.count
+
+    # Sum of all the liters sold today
+    @total_liters_today = Sale.where(created_at: Time.zone.now.all_day).sum(:liters)
+
+    @outstanding_debt = Customer.sum(:balance)
 
     # Fetch the total number of staff who are not the one who is loogegd in
     @staff_count = User.where.not(id: current_user.id).count
+
+    # We need to find a way to keep track of the days cashflow
+    @payments_today = Payment.where(created_at: Time.zone.now.all_day).sum(:amount)
   end
 end
