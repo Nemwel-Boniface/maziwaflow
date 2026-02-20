@@ -5,6 +5,16 @@ class CustomersController < ApplicationController
     @customers = Customer.ordered
   end
 
+  def toggle_active
+    customer = Customer.find(params[:id])
+    # Toggling the boolean value
+    if customer.update(active: !customer.active)
+      redirect_to customers_path, notice: "Updated active status for #{customer.name}."
+    else
+      redirect_to customers_path, alert: "Could not update active status."
+    end
+  end
+
   def show
     @customer = Customer.find(params[:id])
 

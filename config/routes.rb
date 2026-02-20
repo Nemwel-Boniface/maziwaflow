@@ -22,7 +22,11 @@ Rails.application.routes.draw do
   end
 
   get "dashboard", to: "dashboard#index", as: :dashboard
-  resources :customers
+  resources :customers do
+    member do
+      patch :toggle_active
+    end
+  end
   resources :sales
   resources :payments
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
