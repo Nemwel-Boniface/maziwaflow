@@ -2,7 +2,14 @@ class PaymentsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @payments = Payment.includes(:customer, :user).order(created_at: :desc)
+    @per_page = 15
+    @page = (params[:page] || 1).to_i
+
+    all_payments = Payment.includes(:customer, :user).order(created_at: :desc)
+    @total_count = all_payments.size
+    @total_pages = (@total_count / @per_page.to_f).ceil
+
+    @payments = all_payments.offset((@page - 1) * @per_page).limit(@per_page)
   end
 
   def show

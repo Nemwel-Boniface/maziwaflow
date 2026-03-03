@@ -2,7 +2,14 @@ class SalesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @sales = Sale.includes(:customer).order(created_at: :desc)
+    @per_page = 15
+    @page = (params[:page] || 1).to_i
+
+    all_sales = Sale.includes(:customer).order(created_at: :desc)
+    @total_count = all_sales.size
+    @total_pages = (@total_count / @per_page.to_f).ceil
+
+    @sales = all_sales.offset((@page - 1) * @per_page).limit(@per_page)
   end
 
   def show
