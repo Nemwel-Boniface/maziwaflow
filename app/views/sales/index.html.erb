@@ -30,6 +30,11 @@
             </td>
           </tr>
         <% end %>
+        <% if @sales.none? %>
+          <tr>
+            <td colspan="4" class="px-6 py-10 text-center text-sm text-slate-500">No sales found.</td>
+          </tr>
+        <% end %>
       </tbody>
     </table>
     </div>

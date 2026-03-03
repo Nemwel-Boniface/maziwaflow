@@ -84,6 +84,11 @@
             </td>
           </tr>
         <% end %>
+        <% if @customers.none? %>
+          <tr>
+            <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-500">No customers found.</td>
+          </tr>
+        <% end %>
       </tbody>
     </table>
     </div>
