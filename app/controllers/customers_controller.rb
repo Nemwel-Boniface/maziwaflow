@@ -4,9 +4,27 @@ class CustomersController < ApplicationController
   def index
     @per_page = 15
     @page = (params[:page] || 1).to_i
+    @query = params[:query].to_s.strip
+    @status_filter = params[:status].to_s
+    @owes_only = params[:owes_only] == "1"
 
     all_customers = Customer.ordered
-    @total_count = all_customers.size
+
+    if @query.present?
+      all_customers = all_customers.where("name ILIKE :query OR phone_number ILIKE :query", query: "%#{@query}%")
+    end
+
+    case @status_filter
+    when "active"
+      all_customers = all_customers.where(active: true)
+    when "inactive"
+      all_customers = all_customers.where(active: false)
+    end
+
+    all_customers = all_customers.where("balance > 0") if @owes_only
+
+    @customer_name_suggestions = Customer.ordered.limit(100).pluck(:name)
+    @total_count = all_customers.count
     @total_pages = (@total_count / @per_page.to_f).ceil
 
     @customers = all_customers.offset((@page - 1) * @per_page).limit(@per_page)
