@@ -1,0 +1,175 @@
+<div class="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+  <%# Navigation Header %>
+  <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <%= link_to "← Back to Customers", customers_path, class: "text-sm font-medium text-slate-600 hover:text-blue-600 flex items-center transition-colors" %>
+    <div class="flex space-x-3 w-full sm:w-auto">
+        <%= link_to "Record Sale", new_sale_path(customer_id: @customer.id), class: "flex-1 text-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 shadow-sm transition-all active:scale-95" %>
+        <%= link_to "Receive Payment", new_payment_path(customer_id: @customer.id), class: "flex-1 text-center px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 shadow-sm transition-all active:scale-95" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <%# Customer Profile Card %>
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+    <div>
+        <div class="flex justify-between items-start mb-4">
+        <div>
+            <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Customer Profile</h2>
+            <h1 class="text-2xl font-bold text-slate-900"><%= @customer.name %></h1>
+        </div>
+
+        <%# Logic: Disable deactivation if balance > 0 %>
+        <% can_deactivate = @customer.balance <= 0 %>
+        
+        <% if @customer.active && !can_deactivate %>
+            <%# Disabled state with tooltip %>
+            <div class="p-2 rounded-full bg-slate-50 cursor-help" 
+            title="<%= "Cannot deactivate: Customer must clear balance of KES #{number_with_delimiter(@customer.balance)} first" %>">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            </div>
+        <% else %>
+            <%# Normal Toggle Button %>
+            <%= button_to toggle_active_customer_path(@customer), 
+                method: :patch, 
+                data: { turbo_confirm: "Are you sure you want to #{ @customer.active ? 'deactivate' : 'activate' } this customer?" },
+                class: "p-2 rounded-full hover:bg-slate-100 transition-colors group",
+                title: @customer.active ? "Deactivate Customer" : "Activate Customer" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 <%= @customer.active ? 'text-slate-400 group-hover:text-red-500' : 'text-emerald-500' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <% if @customer.active %>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728A9 9 0 115.636 5.636m12.728 12.728L5.636 5.636" />
+                <% else %>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <% end %>
+            </svg>
+            <% end %>
+        <% end %>
+        </div>
+
+        <div class="space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-50 pb-2">
+                <span class="text-slate-500 text-sm">Phone:</span>
+                <span class="font-medium text-slate-900"><%= @customer.phone_number.presence || "N/A" %></span>
+            </div>
+            <div class="flex justify-between items-center border-b border-slate-50 pb-2">
+                <span class="text-slate-500 text-sm">Status:</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium <%= @customer.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                <%= @customer.active ? 'Active' : 'Inactive' %>
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-8 p-4 bg-slate-50 rounded-xl">
+        <span class="text-slate-500 text-xs block mb-1">Current Balance</span>
+        <span class="text-2xl font-black <%= @customer.balance > 0 ? 'text-red-600' : 'text-emerald-600' %>">
+        KES <%= number_with_delimiter(@customer.balance) %>
+        </span>
+    </div>
+    </div>
+
+    <%# Liters Chart Card %>
+    <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm overflow-hidden" data-controller="chart-toggle">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-sm font-bold text-slate-800">Milk Delivery History</h2>
+          <span class="text-xs text-slate-400 font-medium">Last 30 Days</span>
+        </div>
+
+        <div class="relative inline-block text-left">
+          <select 
+            data-action="change->chart-toggle#switch" 
+            class="block w-full pl-3 pr-10 py-1.5 text-xs font-semibold border-slate-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md bg-slate-50 text-slate-600 cursor-pointer"
+          >
+            <option value="line">Line Chart (Trend)</option>
+            <option value="column">Column Chart (Daily Totals)</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="w-full relative min-h-[250px]">
+        <div data-chart-toggle-target="chart" data-chart-type="line">
+          <%= line_chart @liters_history, colors: ["#3b82f6"], points: true, height: "250px", suffix: " L", library: { stroke: { width: 3, curve: 'smooth' } } %>
+        </div>
+
+        <div data-chart-toggle-target="chart" data-chart-type="column" class="hidden">
+          <%= column_chart @liters_history, colors: ["#60a5fa"], height: "250px", suffix: " L", library: { plotOptions: { bar: { borderRadius: 4 } } } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Combined Ledger View %>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <%# Recent Sales List %>
+    <div class="flex flex-col">
+      <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center">
+        <span class="mr-2">🥛</span> Recent Deliveries
+      </h3>
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex-grow">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Date</th>
+                <th class="px-6 py-3 text-center text-xs font-bold text-slate-500 uppercase">Liters</th>
+                <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase">Total (KES)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 bg-white">
+              <% @recent_sales.each do |sale| %>
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="px-6 py-4 text-sm text-slate-600"><%= sale.created_at.strftime("%b %d, %Y") %></td>
+                  <td class="px-6 py-4 text-sm text-center font-medium"><%= sale.liters %>L</td>
+                  <td class="px-6 py-4 text-sm text-right font-bold text-slate-900"><%= number_with_delimiter(sale.total_amount) %></td>
+                </tr>
+              <% end %>
+              <% if @recent_sales.none? %>
+                <tr><td colspan="3" class="px-6 py-8 text-center text-slate-400 text-sm italic">No sales found</td></tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <%= render 'shared/pagination', total_pages: @sales_total_pages, current_page: @sales_page, param_name: :sales_page %>
+    </div>
+
+    <%# Recent Payments List %>
+    <div class="flex flex-col">
+      <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center">
+        <span class="mr-2">💰</span> Recent Payments
+      </h3>
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex-grow">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Method</th>
+                <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase">Amount (KES)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 bg-white">
+              <% @recent_payments.each do |payment| %>
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="px-6 py-4 text-sm text-slate-600"><%= payment.created_at.strftime("%b %d, %Y") %></td>
+                  <td class="px-6 py-4 text-sm">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">
+                      <%= payment.payment_method %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-right font-bold text-emerald-600 font-mono"><%= number_with_delimiter(payment.amount) %></td>
+                </tr>
+              <% end %>
+              <% if @recent_payments.none? %>
+                <tr><td colspan="3" class="px-6 py-8 text-center text-slate-400 text-sm italic">No payments found</td></tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <%= render 'shared/pagination', total_pages: @payments_total_pages, current_page: @payments_page, param_name: :payments_page %>
+    </div>
+  </div>
+</div>

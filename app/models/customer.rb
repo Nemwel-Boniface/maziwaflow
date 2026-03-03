@@ -1,6 +1,7 @@
 class Customer < ApplicationRecord
   # associations
   has_many :sales, dependent: :destroy
+  has_many :payments, dependent: :destroy
 
   # Validations
   validates :name, presence: true

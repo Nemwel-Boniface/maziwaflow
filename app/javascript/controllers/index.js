@@ -4,5 +4,8 @@
 
 import { application } from "./application"
 
+import ChartToggleController from "./chart_toggle_controller"
+application.register("chart-toggle", ChartToggleController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
