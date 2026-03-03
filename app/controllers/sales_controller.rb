@@ -3,7 +3,7 @@ class SalesController < ApplicationController
 
   def index
     @per_page = 15
-    @page = (params[:page] || 1).to_i
+    @page = [ 1, (params[:page] || 1).to_i ].max
 
     all_sales = Sale.includes(:customer).order(created_at: :desc)
     @total_count = all_sales.size

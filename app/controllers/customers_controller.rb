@@ -3,7 +3,7 @@ class CustomersController < ApplicationController
 
   def index
     @per_page = 15
-    @page = (params[:page] || 1).to_i
+    @page = [ 1, (params[:page] || 1).to_i ].max
     @query = params[:query].to_s.strip
     @status_filter = params[:status].to_s
     @owes_only = params[:owes_only] == "1"
@@ -54,14 +54,14 @@ class CustomersController < ApplicationController
 
     # Paginate Sales
     @sales_per_page = 10
-    @sales_page = (params[:sales_page] || 1).to_i
+    @sales_page = [ 1, (params[:sales_page] || 1).to_i ].max
     all_sales = @customer.sales.order(created_at: :desc)
     @sales_total_pages = (all_sales.size / @sales_per_page.to_f).ceil
     @recent_sales = all_sales.offset((@sales_page - 1) * @sales_per_page).limit(@sales_per_page)
 
     # Paginate Payments
     @payments_per_page = 10
-    @payments_page = (params[:payments_page] || 1).to_i
+    @payments_page = [ 1, (params[:payments_page] || 1).to_i ].max
     all_payments = @customer.payments.order(created_at: :desc)
     @payments_total_pages = (all_payments.size / @payments_per_page.to_f).ceil
     @recent_payments = all_payments.offset((@payments_page - 1) * @payments_per_page).limit(@payments_per_page)

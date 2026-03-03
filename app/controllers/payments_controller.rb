@@ -3,7 +3,7 @@ class PaymentsController < ApplicationController
 
   def index
     @per_page = 15
-    @page = (params[:page] || 1).to_i
+    @page = [ 1, (params[:page] || 1).to_i ].max
     @date_filter = params[:date_filter].to_s
     @customer_query = params[:customer_query].to_s.strip
     @payment_method = params[:payment_method].to_s.strip
