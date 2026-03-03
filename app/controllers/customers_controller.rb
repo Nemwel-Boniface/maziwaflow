@@ -23,11 +23,16 @@ class CustomersController < ApplicationController
 
     all_customers = all_customers.where("balance > 0") if @owes_only
 
-    @customer_name_suggestions = Customer.ordered.limit(100).pluck(:name)
     @total_count = all_customers.count
     @total_pages = (@total_count / @per_page.to_f).ceil
 
     @customers = all_customers.offset((@page - 1) * @per_page).limit(@per_page)
+
+    @customer_name_suggestions = if @query.present? || @status_filter.present? || @owes_only
+      all_customers.reorder(name: :asc).distinct.limit(100).pluck(:name)
+    else
+      @customers.map(&:name).uniq
+    end
   end
 
   def toggle_active

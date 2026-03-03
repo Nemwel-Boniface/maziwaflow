@@ -30,12 +30,12 @@ class PaymentsController < ApplicationController
       all_payments = all_payments.where(created_at: Time.zone.now.beginning_of_month..Time.zone.now.end_of_month)
     when "custom"
       if @start_date.present?
-        start_time = Time.zone.parse(@start_date)&.beginning_of_day
+        start_time = safe_parse_date(@start_date)&.beginning_of_day
         all_payments = all_payments.where("payments.created_at >= ?", start_time) if start_time
       end
 
       if @end_date.present?
-        end_time = Time.zone.parse(@end_date)&.end_of_day
+        end_time = safe_parse_date(@end_date)&.end_of_day
         all_payments = all_payments.where("payments.created_at <= ?", end_time) if end_time
       end
     end
@@ -73,5 +73,11 @@ class PaymentsController < ApplicationController
 
   def payment_params
     params.require(:payment).permit(:customer_id, :amount, :payment_method, :notes)
+  end
+
+  def safe_parse_date(value)
+    Time.zone.parse(value)
+  rescue ArgumentError, TypeError
+    nil
   end
 end
