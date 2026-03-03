@@ -56,14 +56,14 @@ class CustomersController < ApplicationController
     @sales_per_page = 10
     @sales_page = [ 1, (params[:sales_page] || 1).to_i ].max
     all_sales = @customer.sales.order(created_at: :desc)
-    @sales_total_pages = (all_sales.size / @sales_per_page.to_f).ceil
+    @sales_total_pages = (all_sales.count / @sales_per_page.to_f).ceil
     @recent_sales = all_sales.offset((@sales_page - 1) * @sales_per_page).limit(@sales_per_page)
 
     # Paginate Payments
     @payments_per_page = 10
     @payments_page = [ 1, (params[:payments_page] || 1).to_i ].max
     all_payments = @customer.payments.order(created_at: :desc)
-    @payments_total_pages = (all_payments.size / @payments_per_page.to_f).ceil
+    @payments_total_pages = (all_payments.count / @payments_per_page.to_f).ceil
     @recent_payments = all_payments.offset((@payments_page - 1) * @payments_per_page).limit(@payments_per_page)
   end
 

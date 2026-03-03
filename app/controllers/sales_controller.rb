@@ -6,7 +6,7 @@ class SalesController < ApplicationController
     @page = [ 1, (params[:page] || 1).to_i ].max
 
     all_sales = Sale.includes(:customer).order(created_at: :desc)
-    @total_count = all_sales.size
+    @total_count = all_sales.count
     @total_pages = (@total_count / @per_page.to_f).ceil
 
     @sales = all_sales.offset((@page - 1) * @per_page).limit(@per_page)
