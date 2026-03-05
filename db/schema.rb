@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_20_150627) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_05_184731) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -58,6 +58,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_20_150627) do
     t.uuid "user_id", null: false
     t.index ["customer_id"], name: "index_sales_on_customer_id"
     t.index ["user_id"], name: "index_sales_on_user_id"
+  end
+
+  create_table "sms_notifications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "error"
+    t.string "event", null: false
+    t.text "message", null: false
+    t.uuid "notifiable_id", null: false
+    t.string "notifiable_type", null: false
+    t.string "phone_number", null: false
+    t.string "provider_message_id"
+    t.datetime "sent_at"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event"], name: "index_sms_notifications_on_event"
+    t.index ["notifiable_type", "notifiable_id"], name: "index_sms_notifications_on_notifiable"
+    t.index ["status"], name: "index_sms_notifications_on_status"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
