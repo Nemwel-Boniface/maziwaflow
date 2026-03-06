@@ -62,7 +62,15 @@ class PaymentsController < ApplicationController
 
     respond_to do |format|
       if @payment.save
-        format.html { redirect_to payments_path, notice: "Payment recorded and balance updated.", status: :see_other }
+        customer_name = @payment.customer&.name || "Customer"
+        customer_balance = @payment.customer&.balance.to_f
+        payment_notice = if customer_balance <= 0
+          "Payment created and SMS sent to #{customer_name}. Customer balance cleared."
+        else
+          "Payment created and SMS sent to #{customer_name}. Dues owed: KES #{@payment.customer&.balance}."
+        end
+
+        format.html { redirect_to payments_path, notice: payment_notice, status: :see_other }
       else
         format.html { render :new, status: :unprocessable_entity }
       end

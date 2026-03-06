@@ -27,7 +27,14 @@ class SalesController < ApplicationController
 
     respond_to do |format|
       if @sale.save
-        format.html { redirect_to sales_path, notice: "Sale recorded successfully.", status: :see_other }
+        customer_name = @sale.customer&.name || "Customer"
+        customer_balance = @sale.customer&.balance
+
+        format.html do
+          redirect_to sales_path,
+            notice: "Sale created and SMS sent to #{customer_name}. Dues owed: KES #{customer_balance}.",
+            status: :see_other
+        end
       else
         format.html { render :new, status: :unprocessable_entity }
       end

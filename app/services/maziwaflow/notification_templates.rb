@@ -2,6 +2,7 @@ module Maziwaflow
   class NotificationTemplates
     MAX_SMS_LENGTH = 150
     SIGN_OFF = "Friends at Maziwa flow"
+    PAYMENT_NUMBER = "0727475518"
 
     class << self
       # Public: Builds a string message based on event type
@@ -23,11 +24,12 @@ module Maziwaflow
       def sale_template(sale)
         customer = sale.customer
         name = first_name(customer&.name, fallback: "Customer")
+        amount = sale.total_amount
+        balance = customer&.balance
 
-        limit_message(
-          "Hello #{name}, #{sale.liters}L delivered. " \
-          "Amount: KES #{sale.total_amount}. " \
-          "Balance: KES #{customer&.balance}. #{SIGN_OFF}"
+        compose_message(
+          "Hi #{name}, you bought #{sale.liters}L milk worth KES #{amount}. " \
+          "Dues: KES #{balance}. Pay via #{PAYMENT_NUMBER}."
         )
       end
 
@@ -35,10 +37,16 @@ module Maziwaflow
         customer = payment.customer
         name = first_name(customer&.name, fallback: "Customer")
         sender_name = first_name(payment.user&.name, fallback: "Maziwa")
+        balance = customer&.balance.to_f
 
-        limit_message(
-          "Hello #{name}, KES #{payment.amount} received by #{sender_name}. " \
-          "New Balance: KES #{customer&.balance}. #{SIGN_OFF}"
+        return compose_message(
+          "Hi #{name}, payment of KES #{payment.amount} received by #{sender_name}. " \
+          "Your balance is cleared. Thank you for trusting us. Karibu tena."
+        ) if balance <= 0
+
+        compose_message(
+          "Hi #{name}, KES #{payment.amount} received by #{sender_name}. " \
+          "Dues: KES #{customer&.balance}."
         )
       end
 
@@ -47,8 +55,14 @@ module Maziwaflow
         extracted_name.present? ? extracted_name.capitalize : fallback
       end
 
-      def limit_message(message)
-        message.to_s.strip[0...MAX_SMS_LENGTH]
+      def compose_message(body)
+        clean_body = body.to_s.squish
+        separator = " "
+        max_body_length = MAX_SMS_LENGTH - SIGN_OFF.length - separator.length
+
+        return SIGN_OFF[0...MAX_SMS_LENGTH] if max_body_length <= 0
+
+        "#{clean_body[0...max_body_length].rstrip}#{separator}#{SIGN_OFF}"
       end
     end
   end
