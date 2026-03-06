@@ -3,10 +3,11 @@ module Maziwaflow
     MAX_SMS_LENGTH = 150
     SIGN_OFF = "Friends at Maziwa flow"
     PAYMENT_NUMBER = "0727475518"
+    MILK_PRICE_PER_LITRE = 70
 
     class << self
       # Public: Builds a string message based on event type
-      # event - :sale_created, :payment_received
+      # event - :sale_created, :payment_received, :customer_created, :customer_deactivated
       # resource - The Sale or Payment object
       def build(event:, resource:)
         case event.to_sym
@@ -14,6 +15,10 @@ module Maziwaflow
           sale_template(resource)
         when :payment_received
           payment_template(resource)
+        when :customer_created
+          customer_created_template(resource)
+        when :customer_deactivated
+          customer_deactivated_template(resource)
         else
           raise ArgumentError, "Unknown SMS event: #{event}"
         end
@@ -47,6 +52,23 @@ module Maziwaflow
         compose_message(
           "Hi #{name}, KES #{payment.amount} received by #{sender_name}. " \
           "Dues: KES #{customer&.balance}."
+        )
+      end
+
+      def customer_created_template(customer)
+        name = first_name(customer&.name, fallback: "Customer")
+
+        compose_message(
+          "Hi #{name}, welcome to Maziwa flow. Milk is KES #{MILK_PRICE_PER_LITRE}/L. " \
+          "Pay via #{PAYMENT_NUMBER}. Glad to serve you."
+        )
+      end
+
+      def customer_deactivated_template(customer)
+        name = first_name(customer&.name, fallback: "Customer")
+
+        compose_message(
+          "Hi #{name}, thank you for being our customer. We appreciate your trust and hope to serve you again soon."
         )
       end
 

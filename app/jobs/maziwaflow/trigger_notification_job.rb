@@ -9,7 +9,7 @@ module Maziwaflow
       # 1. Generate message using templates
       message = NotificationTemplates.build(event: event, resource: record)
 
-      customer = record.customer
+      customer = notification_customer_for(record)
       return if customer&.phone_number.blank?
 
       # 2. Create Audit Record (Immediate visibility in UI)
@@ -34,6 +34,14 @@ module Maziwaflow
       Rails.logger.info("[TriggerNotificationJob] Enqueued SMS for #{record_class}##{record_id}")
 
       notification
+    end
+
+    private
+
+    def notification_customer_for(record)
+      return record if record.is_a?(Customer)
+
+      record.respond_to?(:customer) ? record.customer : nil
     end
   end
 end
