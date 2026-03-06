@@ -1,5 +1,8 @@
 module Maziwaflow
   class NotificationTemplates
+    MAX_SMS_LENGTH = 150
+    SIGN_OFF = "Friends at Maziwa flow"
+
     class << self
       # Public: Builds a string message based on event type
       # event - :sale_created, :payment_received
@@ -19,19 +22,33 @@ module Maziwaflow
 
       def sale_template(sale)
         customer = sale.customer
-        name = customer&.name || "Customer"
+        name = first_name(customer&.name, fallback: "Customer")
 
-        "Hello #{name}, 🥛 #{sale.liters}L delivered. " \
-        "Amount: KES #{sale.total_amount}. " \
-        "Balance: KES #{customer&.balance}. Thank you!"
+        limit_message(
+          "Hello #{name}, #{sale.liters}L delivered. " \
+          "Amount: KES #{sale.total_amount}. " \
+          "Balance: KES #{customer&.balance}. #{SIGN_OFF}"
+        )
       end
 
       def payment_template(payment)
         customer = payment.customer
-        name = customer&.name || "Customer"
+        name = first_name(customer&.name, fallback: "Customer")
+        sender_name = first_name(payment.user&.name, fallback: "Maziwa")
 
-        "Confirmed: KES #{payment.amount} received. " \
-        "New Balance: KES #{customer&.balance}. Thank you!"
+        limit_message(
+          "Hello #{name}, KES #{payment.amount} received by #{sender_name}. " \
+          "New Balance: KES #{customer&.balance}. #{SIGN_OFF}"
+        )
+      end
+
+      def first_name(full_name, fallback:)
+        extracted_name = full_name.to_s.strip.split(/\s+/).first
+        extracted_name.present? ? extracted_name.capitalize : fallback
+      end
+
+      def limit_message(message)
+        message.to_s.strip[0...MAX_SMS_LENGTH]
       end
     end
   end
