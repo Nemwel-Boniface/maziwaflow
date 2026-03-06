@@ -35,5 +35,9 @@ class Payment < ApplicationRecord
     unless customer.sales.exists?
       errors.add(:customer, "must have at least one milk delivery before payment")
     end
+
+    unless customer.balance.to_f.positive?
+      errors.add(:customer, "has no outstanding balance to pay")
+    end
   end
 end

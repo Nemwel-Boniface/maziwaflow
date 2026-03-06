@@ -54,7 +54,14 @@ class PaymentsController < ApplicationController
   def new
     @payment = Payment.new
     # If coming from a specific customer page later, we can pre-select them
-    @payment.customer_id = params[:customer_id]
+    selected_customer = Customer.find_by(id: params[:customer_id])
+
+    if params[:customer_id].present? && selected_customer&.eligible_for_payment?
+      @payment.customer_id = selected_customer.id
+    elsif params[:customer_id].present?
+      redirect_back fallback_location: customers_path,
+        alert: "Payment can only be received for active customers with deliveries and outstanding balance."
+    end
   end
 
   def create

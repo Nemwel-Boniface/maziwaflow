@@ -10,7 +10,13 @@ class Customer < ApplicationRecord
   # Scopes
   scope :active, -> { where(active: true) }
   scope :with_deliveries, -> { joins(:sales).distinct }
+  scope :with_outstanding_balance, -> { where("balance > 0") }
+  scope :eligible_for_payment, -> { active.with_deliveries.with_outstanding_balance }
   scope :ordered, -> { order(name: :asc) }
+
+  def eligible_for_payment?
+    active? && balance.to_f.positive? && sales.exists?
+  end
 
   # Callbacks
   after_create_commit :trigger_welcome_sms
