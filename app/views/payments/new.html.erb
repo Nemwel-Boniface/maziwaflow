@@ -21,10 +21,10 @@
 
       <div>
         <%= f.label :customer_id, "Select Customer", class: "block text-sm font-semibold text-slate-700 mb-1" %>
-        <%= f.collection_select :customer_id, Customer.active.ordered, :id, :name, 
+        <%= f.collection_select :customer_id, Customer.active.with_deliveries.ordered, :id, :name,
             { prompt: "Who is paying?" }, 
             { required: true, class: "block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm shadow-sm" } %>
-        <p class="mt-1 text-xs text-slate-500">Only active customers are listed here.</p>
+        <p class="mt-1 text-xs text-slate-500">Only active customers with at least one delivery are listed here.</p>
       </div>
 
       <div class="grid grid-cols-2 gap-4">

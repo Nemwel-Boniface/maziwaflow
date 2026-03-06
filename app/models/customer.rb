@@ -9,6 +9,7 @@ class Customer < ApplicationRecord
 
   # Scopes
   scope :active, -> { where(active: true) }
+  scope :with_deliveries, -> { joins(:sales).distinct }
   scope :ordered, -> { order(name: :asc) }
 
   # Callbacks
