@@ -1,7 +1,7 @@
 <div class="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
   <%# Navigation Header %>
   <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-    <%= link_to "← Back to Customers", customers_path, class: "text-sm font-medium text-slate-600 hover:text-blue-600 flex items-center transition-colors" %>
+    <%= link_to "← Back to Customers", customers_path, class: "text-sm font-medium text-slate-600 hover:text-green-600 flex items-center transition-colors" %>
     <% can_receive_payment = @customer.eligible_for_payment? %>
     <div class="flex space-x-3 w-full sm:w-auto">
         <%= link_to "Record Sale", new_sale_path(customer_id: @customer.id), class: "flex-1 text-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 shadow-sm transition-all active:scale-95" %>
@@ -85,7 +85,7 @@
         <div class="relative inline-block text-left">
           <select 
             data-action="change->chart-toggle#switch" 
-            class="block w-full pl-3 pr-10 py-1.5 text-xs font-semibold border-slate-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md bg-slate-50 text-slate-600 cursor-pointer"
+            class="block w-full pl-3 pr-10 py-1.5 text-xs font-semibold border-slate-200 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-md bg-slate-50 text-slate-600 cursor-pointer"
           >
             <option value="line">Line Chart (Trend)</option>
             <option value="column">Column Chart (Daily Totals)</option>
@@ -95,11 +95,11 @@
       
       <div class="w-full relative min-h-[250px]">
         <div data-chart-toggle-target="chart" data-chart-type="line">
-          <%= line_chart @liters_history, colors: ["#3b82f6"], points: true, height: "250px", suffix: " L", library: { stroke: { width: 3, curve: 'smooth' } } %>
+          <%= line_chart @liters_history, colors: ["#22c55e"], points: true, height: "250px", suffix: " L", library: { stroke: { width: 3, curve: 'smooth' } } %>
         </div>
 
         <div data-chart-toggle-target="chart" data-chart-type="column" class="hidden">
-          <%= column_chart @liters_history, colors: ["#60a5fa"], height: "250px", suffix: " L", library: { plotOptions: { bar: { borderRadius: 4 } } } %>
+          <%= column_chart @liters_history, colors: ["#86efac"], height: "250px", suffix: " L", library: { plotOptions: { bar: { borderRadius: 4 } } } %>
         </div>
       </div>
     </div>

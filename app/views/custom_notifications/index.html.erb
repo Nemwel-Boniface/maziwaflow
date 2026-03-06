@@ -5,7 +5,7 @@
       <p class="mt-2 text-sm text-slate-600">History of custom messages sent to customers.</p>
     </div>
     <div class="mt-4 sm:mt-0">
-      <%= link_to "Send Custom SMS", new_custom_notification_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors" %>
+      <%= link_to "Send Custom SMS", new_custom_notification_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 transition-colors" %>
     </div>
   </div>
 
@@ -29,7 +29,7 @@
                 <span class="block text-xs text-slate-400"><%= campaign.created_at.strftime("%H:%M") %></span>
               </td>
               <td class="px-6 py-4 text-sm text-slate-800">
-                <%= link_to truncate(campaign.body, length: 90), custom_notification_path(campaign), class: "font-medium text-blue-600 hover:text-blue-800" %>
+                <%= link_to truncate(campaign.body, length: 90), custom_notification_path(campaign), class: "font-medium text-violet-600 hover:text-violet-800" %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 capitalize"><%= campaign.audience %></td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700"><%= campaign.sender&.name.presence || campaign.sender&.email || "N/A" %></td>
