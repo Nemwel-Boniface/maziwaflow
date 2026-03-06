@@ -2,6 +2,7 @@ module Maziwaflow
   class NotificationTemplates
     MAX_SMS_LENGTH = 150
     SIGN_OFF = "Friends at Maziwa flow"
+    CUSTOM_BODY_MAX = 100
     PAYMENT_NUMBER = "0727475518"
     MILK_PRICE_PER_LITRE = 70
 
@@ -31,7 +32,11 @@ module Maziwaflow
 
       def max_custom_body_length_for_name(full_name)
         name = first_name(full_name, fallback: "Customer")
-        custom_body_limit_for(name)
+        [ custom_body_limit_for(name), CUSTOM_BODY_MAX ].min
+      end
+
+      def custom_body_input_limit
+        CUSTOM_BODY_MAX
       end
 
       private
