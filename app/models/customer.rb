@@ -9,5 +9,38 @@ class Customer < ApplicationRecord
 
   # Scopes
   scope :active, -> { where(active: true) }
+  scope :with_deliveries, -> { joins(:sales).distinct }
+  scope :with_outstanding_balance, -> { where("balance > 0") }
+  scope :eligible_for_payment, -> { active.with_deliveries.with_outstanding_balance }
   scope :ordered, -> { order(name: :asc) }
+
+  def eligible_for_payment?
+    active? && balance.to_f.positive? && sales.exists?
+  end
+
+  # Callbacks
+  after_create_commit :trigger_welcome_sms
+  after_update_commit :trigger_deactivation_sms, if: :deactivated?
+
+  private
+
+  def trigger_welcome_sms
+    Maziwaflow::TriggerNotificationJob.perform_later(
+      record_class: self.class.name,
+      record_id: id,
+      event: :customer_created
+    )
+  end
+
+  def trigger_deactivation_sms
+    Maziwaflow::TriggerNotificationJob.perform_later(
+      record_class: self.class.name,
+      record_id: id,
+      event: :customer_deactivated
+    )
+  end
+
+  def deactivated?
+    saved_change_to_active? && !active?
+  end
 end

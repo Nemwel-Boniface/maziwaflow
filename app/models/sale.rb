@@ -7,11 +7,11 @@ class Sale < ApplicationRecord
   validates :liters, :price_per_liter, presence: true, numericality: { greater_than: 0 }
 
   # Callbacks
-  # Before saving, calculate the total
   before_validation :calculate_total_amount
-
-  # After creation, update the customer's debt balance
   after_create :increase_customer_balance
+
+  # Trigger SMS only after the DB transaction is committed
+  after_create_commit :trigger_sms
 
   private
 
@@ -20,7 +20,14 @@ class Sale < ApplicationRecord
   end
 
   def increase_customer_balance
-    # We use increment! to safely update the balance in the database
     customer.increment!(:balance, total_amount)
+  end
+
+  def trigger_sms
+    Maziwaflow::TriggerNotificationJob.perform_later(
+      record_class: self.class.name,
+      record_id: id,
+      event: :sale_created
+    )
   end
 end

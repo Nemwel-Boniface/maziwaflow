@@ -5,7 +5,7 @@
       <p class="mt-2 text-sm text-slate-600">A list of all clients and their current balances.</p>
     </div>
     <div class="mt-4 sm:mt-0">
-      <%= link_to "Add New Customer", new_customer_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors" %>
+      <%= link_to "Add New Customer", new_customer_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-green-600 hover:bg-green-700 transition-colors" %>
     </div>
   </div>
 
@@ -14,7 +14,7 @@
       <%= form_with url: customers_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-12 gap-3 items-end" do %>
         <div class="md:col-span-6">
           <label for="query" class="block text-xs font-semibold text-slate-600 mb-1">Search name or phone</label>
-          <%= text_field_tag :query, @query, list: "customer-name-options", placeholder: "Type customer name or phone", class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          <%= text_field_tag :query, @query, list: "customer-name-options", placeholder: "Type customer name or phone", class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" %>
           <datalist id="customer-name-options">
             <% @customer_name_suggestions.each do |name| %>
               <option value="<%= name %>"></option>
@@ -24,18 +24,18 @@
 
         <div class="md:col-span-3">
           <label for="status" class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
-          <%= select_tag :status, options_for_select([["All", ""], ["Active", "active"], ["Inactive", "inactive"]], @status_filter), class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          <%= select_tag :status, options_for_select([["All", ""], ["Active", "active"], ["Inactive", "inactive"]], @status_filter), class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" %>
         </div>
 
         <div class="md:col-span-2">
           <label class="inline-flex items-center gap-2 text-sm text-slate-700 py-2">
-            <%= check_box_tag :owes_only, "1", @owes_only, class: "rounded border-slate-300 text-blue-600 focus:ring-blue-500" %>
+            <%= check_box_tag :owes_only, "1", @owes_only, class: "rounded border-slate-300 text-green-600 focus:ring-green-500" %>
             Owes us only
           </label>
         </div>
 
         <div class="md:col-span-1 flex md:justify-end gap-2">
-          <%= button_tag "Filter", type: "submit", class: "inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors" %>
+          <%= button_tag "Filter", type: "submit", class: "inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition-colors" %>
           <%= link_to "Clear", customers_path, class: "inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 bg-white border border-slate-300 hover:bg-slate-50 transition-colors" %>
         </div>
       <% end %>
@@ -60,7 +60,7 @@
                 <%= customer.active ? 'Active' : 'Inactive' %>
               </span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 hover:underline">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600 hover:underline">
               <%= link_to customer.name, customer_path(customer) %> 
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500"><%= customer.phone_number.presence || "-" %></td>
@@ -75,7 +75,7 @@
                   </svg>
                 </span>
               <% else %>
-                <%= button_to toggle_active_customer_path(customer), method: :patch, class: "text-slate-400 hover:text-blue-600 transition-colors" do %>
+                <%= button_to toggle_active_customer_path(customer), method: :patch, class: "text-slate-400 hover:text-green-600 transition-colors" do %>
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                   </svg>

@@ -76,3 +76,5 @@ gem "cancancan", "~> 3.6"
 
 gem "chartkick"
 gem "groupdate"
+
+gem "africastalking-ruby", require: "AfricasTalking"

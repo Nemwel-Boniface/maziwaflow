@@ -54,7 +54,14 @@ class PaymentsController < ApplicationController
   def new
     @payment = Payment.new
     # If coming from a specific customer page later, we can pre-select them
-    @payment.customer_id = params[:customer_id]
+    selected_customer = Customer.find_by(id: params[:customer_id])
+
+    if params[:customer_id].present? && selected_customer&.eligible_for_payment?
+      @payment.customer_id = selected_customer.id
+    elsif params[:customer_id].present?
+      redirect_back fallback_location: customers_path,
+        alert: "Payment can only be received for active customers with deliveries and outstanding balance."
+    end
   end
 
   def create
@@ -62,7 +69,15 @@ class PaymentsController < ApplicationController
 
     respond_to do |format|
       if @payment.save
-        format.html { redirect_to payments_path, notice: "Payment recorded and balance updated.", status: :see_other }
+        customer_name = @payment.customer&.name || "Customer"
+        customer_balance = @payment.customer&.balance.to_f
+        payment_notice = if customer_balance <= 0
+          "Payment created and SMS sent to #{customer_name}. Customer balance cleared."
+        else
+          "Payment created and SMS sent to #{customer_name}. Dues owed: KES #{@payment.customer&.balance}."
+        end
+
+        format.html { redirect_to payments_path, notice: payment_notice, status: :see_other }
       else
         format.html { render :new, status: :unprocessable_entity }
       end

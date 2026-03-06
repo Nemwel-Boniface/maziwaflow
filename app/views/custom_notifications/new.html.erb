@@ -1,0 +1,88 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <div class="mb-6">
+    <%= link_to "← Back to Custom SMS", custom_notifications_path, class: "text-sm font-medium text-violet-600 hover:text-violet-800" %>
+  </div>
+
+  <div class="bg-white shadow-sm border border-slate-200 rounded-2xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-200 bg-violet-600">
+      <h2 class="text-xl font-bold text-white">Send Custom SMS</h2>
+    </div>
+
+    <%= form_with url: custom_notifications_path,
+      method: :post,
+      local: true,
+      class: "p-6 space-y-6",
+      data: {
+        controller: "custom-notification-form",
+        "custom-notification-form-base-limit-value": @base_body_limit,
+        "custom-notification-form-all-limit-value": @all_recipients_body_limit,
+        "custom-notification-form-max-sms-length-value": Maziwaflow::NotificationTemplates::MAX_SMS_LENGTH,
+        "custom-notification-form-sign-off-value": Maziwaflow::NotificationTemplates::SIGN_OFF
+      } do %>
+      <div>
+        <p class="text-sm font-semibold text-slate-700 mb-2">Recipients</p>
+
+        <% selected_audience = params[:audience].presence || "all" %>
+
+        <label class="flex items-center gap-2 text-sm text-slate-700 mb-2">
+          <%= radio_button_tag :audience, "all", selected_audience == "all", data: { action: "change->custom-notification-form#updateLimit", "custom-notification-form-target": "audience" } %>
+          <span>All active customers with phone numbers</span>
+        </label>
+
+        <label class="flex items-center gap-2 text-sm text-slate-700 mb-3">
+          <%= radio_button_tag :audience, "selected", selected_audience == "selected", data: { action: "change->custom-notification-form#updateLimit", "custom-notification-form-target": "audience" } %>
+          <span>Selected customers only</span>
+        </label>
+
+        <div class="max-h-56 overflow-y-auto border border-slate-200 rounded-lg p-3 bg-slate-50">
+          <% selected_ids = Array(params[:customer_ids]).map(&:to_s) %>
+          <% @customers.each do |customer| %>
+            <label class="flex items-center gap-2 text-sm text-slate-700 py-1">
+              <%= check_box_tag "customer_ids[]", customer.id, selected_ids.include?(customer.id.to_s),
+                data: {
+                  action: "change->custom-notification-form#updateLimit",
+                  "custom-notification-form-target": "recipient",
+                  max_body_length: Maziwaflow::NotificationTemplates.max_custom_body_length_for_name(customer.name),
+                  customer_name: customer.name
+                } %>
+              <span><%= customer.name %> (<%= customer.phone_number %>)</span>
+            </label>
+          <% end %>
+
+          <% if @customers.none? %>
+            <p class="text-sm text-slate-500">No active customers with phone numbers found.</p>
+          <% end %>
+        </div>
+      </div>
+
+      <div>
+        <%= label_tag :body, "Message body", class: "block text-sm font-semibold text-slate-700 mb-1" %>
+        <%= text_area_tag :body, (@prefilled_body.presence || params[:body]), rows: 4,
+          required: true,
+          maxlength: @base_body_limit,
+          placeholder: "Type only the message body here...",
+          data: {
+            action: "input->custom-notification-form#updateLimit",
+            "custom-notification-form-target": "body"
+          },
+          class: "block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-violet-500 focus:border-violet-500 sm:text-sm shadow-sm" %>
+        <div class="mt-1 flex items-center justify-between gap-3">
+          <p class="text-xs text-slate-500">Each customer receives: Hi &lt;name&gt;, [your body] Friends at Maziwa flow (max 150 chars total).</p>
+          <p class="text-xs font-semibold text-slate-600" data-custom-notification-form-target="counter"><%= params[:body].to_s.length %>/<%= @base_body_limit %></p>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <%= submit_tag "Send Custom SMS", class: "w-full sm:w-auto inline-flex justify-center py-3 px-5 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 cursor-pointer transition-all active:scale-95" %>
+      </div>
+
+      <div class="pt-4 border-t border-slate-200">
+        <h3 class="text-sm font-semibold text-slate-700">Preview</h3>
+        <p class="mt-1 text-xs text-slate-500">Live preview for <span data-custom-notification-form-target="previewName">Customer</span></p>
+        <div class="mt-2 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+          <p class="text-sm text-slate-700" data-custom-notification-form-target="preview">Hi Customer, Friends at Maziwa flow</p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

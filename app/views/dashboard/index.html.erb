@@ -64,6 +64,13 @@
             <span class="font-bold text-slate-700">Payment Logs</span>
         <% end %>
 
+        <%= link_to custom_notifications_path, class: "flex items-center p-4 bg-white border border-slate-200 rounded-xl hover:bg-violet-50 transition-colors group" do %>
+          <span class="p-3 bg-violet-100 rounded-lg text-violet-600 mr-4 group-hover:bg-violet-600 group-hover:text-white transition-colors">
+            ✉️
+          </span>
+          <span class="font-bold text-slate-700">Custom SMS</span>
+        <% end %>
+
         <% if current_user.has_role?(:admin) %>
           <%= link_to admin_users_path, class: "flex items-center p-4 bg-white border border-slate-200 rounded-xl hover:bg-indigo-50 transition-colors group relative" do %>
             <div class="relative">
