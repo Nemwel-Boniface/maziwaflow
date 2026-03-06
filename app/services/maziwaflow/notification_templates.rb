@@ -24,6 +24,16 @@ module Maziwaflow
         end
       end
 
+      def build_custom(customer:, body:)
+        name = first_name(customer&.name, fallback: "Customer")
+        custom_message(name: name, body: body)
+      end
+
+      def max_custom_body_length_for_name(full_name)
+        name = first_name(full_name, fallback: "Customer")
+        custom_body_limit_for(name)
+      end
+
       private
 
       def sale_template(sale)
@@ -85,6 +95,22 @@ module Maziwaflow
         return SIGN_OFF[0...MAX_SMS_LENGTH] if max_body_length <= 0
 
         "#{clean_body[0...max_body_length].rstrip}#{separator}#{SIGN_OFF}"
+      end
+
+      def custom_message(name:, body:)
+        clean_body = body.to_s.squish
+        max_body_length = custom_body_limit_for(name)
+
+        return "Hi #{name}, #{SIGN_OFF}" if max_body_length <= 0
+
+        "Hi #{name}, #{clean_body[0...max_body_length].rstrip} #{SIGN_OFF}"
+      end
+
+      def custom_body_limit_for(name)
+        greeting = "Hi #{name}, "
+        separator = " "
+
+        MAX_SMS_LENGTH - greeting.length - separator.length - SIGN_OFF.length
       end
     end
   end
