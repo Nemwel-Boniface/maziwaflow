@@ -1,12 +1,15 @@
 class CustomNotificationsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_custom_body_limits
 
   def new
     @customers = active_customers
+    @all_recipients_body_limit = body_limit_for(@customers)
   end
 
   def create
     @customers = active_customers
+    @all_recipients_body_limit = body_limit_for(@customers)
     @audience = params[:audience].to_s
     @body = params[:body].to_s.squish
 
@@ -22,9 +25,7 @@ class CustomNotificationsController < ApplicationController
       return render :new, status: :unprocessable_entity
     end
 
-    allowed_body_length = recipients.map do |customer|
-      Maziwaflow::NotificationTemplates.max_custom_body_length_for_name(customer.name)
-    end.min
+    allowed_body_length = body_limit_for(recipients)
 
     if @body.length > allowed_body_length
       flash.now[:alert] = "Message body is too long for selected recipients. Max allowed is #{allowed_body_length} characters."
@@ -65,5 +66,17 @@ class CustomNotificationsController < ApplicationController
     else
       active_customers
     end
+  end
+
+  def set_custom_body_limits
+    @base_body_limit = Maziwaflow::NotificationTemplates.custom_body_input_limit
+  end
+
+  def body_limit_for(customers)
+    name_based_limit = customers.map do |customer|
+      Maziwaflow::NotificationTemplates.max_custom_body_length_for_name(customer.name)
+    end.min
+
+    [ name_based_limit || @base_body_limit, @base_body_limit ].min
   end
 end

@@ -7,5 +7,8 @@ import { application } from "./application"
 import ChartToggleController from "./chart_toggle_controller"
 application.register("chart-toggle", ChartToggleController)
 
+import CustomNotificationFormController from "./custom_notification_form_controller"
+application.register("custom-notification-form", CustomNotificationFormController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
