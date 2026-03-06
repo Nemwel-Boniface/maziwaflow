@@ -1,0 +1,56 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <div class="mb-6">
+    <%= link_to "← Back to Dashboard", dashboard_path, class: "text-sm font-medium text-blue-600 hover:text-blue-800" %>
+  </div>
+
+  <div class="bg-white shadow-sm border border-slate-200 rounded-2xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-200 bg-emerald-600">
+      <h2 class="text-xl font-bold text-white">Send Custom SMS</h2>
+    </div>
+
+    <%= form_with url: custom_notification_path, method: :post, local: true, class: "p-6 space-y-6" do %>
+      <div>
+        <p class="text-sm font-semibold text-slate-700 mb-2">Recipients</p>
+
+        <% selected_audience = params[:audience].presence || "all" %>
+
+        <label class="flex items-center gap-2 text-sm text-slate-700 mb-2">
+          <%= radio_button_tag :audience, "all", selected_audience == "all" %>
+          <span>All active customers with phone numbers</span>
+        </label>
+
+        <label class="flex items-center gap-2 text-sm text-slate-700 mb-3">
+          <%= radio_button_tag :audience, "selected", selected_audience == "selected" %>
+          <span>Selected customers only</span>
+        </label>
+
+        <div class="max-h-56 overflow-y-auto border border-slate-200 rounded-lg p-3 bg-slate-50">
+          <% selected_ids = Array(params[:customer_ids]).map(&:to_s) %>
+          <% @customers.each do |customer| %>
+            <label class="flex items-center gap-2 text-sm text-slate-700 py-1">
+              <%= check_box_tag "customer_ids[]", customer.id, selected_ids.include?(customer.id.to_s) %>
+              <span><%= customer.name %> (<%= customer.phone_number %>)</span>
+            </label>
+          <% end %>
+
+          <% if @customers.none? %>
+            <p class="text-sm text-slate-500">No active customers with phone numbers found.</p>
+          <% end %>
+        </div>
+      </div>
+
+      <div>
+        <%= label_tag :body, "Message body", class: "block text-sm font-semibold text-slate-700 mb-1" %>
+        <%= text_area_tag :body, params[:body], rows: 4,
+          required: true,
+          placeholder: "Type only the message body here...",
+          class: "block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm shadow-sm" %>
+        <p class="mt-1 text-xs text-slate-500">Each customer receives: Hi &lt;name&gt;, [your body] Friends at Maziwa flow (max 150 chars total).</p>
+      </div>
+
+      <div class="pt-2">
+        <%= submit_tag "Send Custom SMS", class: "w-full sm:w-auto inline-flex justify-center py-3 px-5 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 cursor-pointer transition-all active:scale-95" %>
+      </div>
+    <% end %>
+  </div>
+</div>
