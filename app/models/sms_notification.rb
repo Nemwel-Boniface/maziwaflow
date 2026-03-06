@@ -1,6 +1,7 @@
 class SmsNotification < ApplicationRecord
   # Polymorphic relationship to Sales, Payments, etc.
   belongs_to :notifiable, polymorphic: true
+  belongs_to :custom_sms_campaign, optional: true
 
   STATUSES = %w[pending queued sent failed].freeze
 

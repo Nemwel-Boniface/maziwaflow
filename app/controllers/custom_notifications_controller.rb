@@ -2,9 +2,26 @@ class CustomNotificationsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_custom_body_limits
 
+  def index
+    @custom_sms_campaigns = CustomSmsCampaign
+      .includes(:sender, sms_notifications: :notifiable)
+      .recent
+  end
+
+  def show
+    @custom_sms_campaign = CustomSmsCampaign
+      .includes(:sender, sms_notifications: :notifiable)
+      .find(params[:id])
+    @sms_notifications = @custom_sms_campaign.sms_notifications.recent
+  end
+
   def new
     @customers = active_customers
     @all_recipients_body_limit = body_limit_for(@customers)
+    if params[:reuse_from].present?
+      source_campaign = CustomSmsCampaign.find_by(id: params[:reuse_from])
+      @prefilled_body = source_campaign&.body
+    end
   end
 
   def create
@@ -32,6 +49,12 @@ class CustomNotificationsController < ApplicationController
       return render :new, status: :unprocessable_entity
     end
 
+    campaign = CustomSmsCampaign.create!(
+      sender: current_user,
+      audience: @audience == "selected" ? "selected" : "all",
+      body: @body
+    )
+
     queued_count = 0
 
     recipients.find_each do |customer|
@@ -39,6 +62,7 @@ class CustomNotificationsController < ApplicationController
 
       notification = SmsNotification.create!(
         notifiable: customer,
+        custom_sms_campaign: campaign,
         event: "custom_message",
         phone_number: customer.phone_number,
         message: message,
@@ -50,7 +74,7 @@ class CustomNotificationsController < ApplicationController
       queued_count += 1
     end
 
-    redirect_to new_custom_notification_path, notice: "Custom SMS queued for #{queued_count} customer(s)."
+    redirect_to custom_notification_path(campaign), notice: "Custom SMS queued for #{queued_count} customer(s)."
   end
 
   private
