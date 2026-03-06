@@ -1,0 +1,49 @@
+<div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+  <div class="sm:flex sm:items-center sm:justify-between mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">Custom SMS</h1>
+      <p class="mt-2 text-sm text-slate-600">History of custom messages sent to customers.</p>
+    </div>
+    <div class="mt-4 sm:mt-0">
+      <%= link_to "Send Custom SMS", new_custom_notification_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors" %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow border border-slate-200 rounded-2xl overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Date</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Body</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Audience</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Sender</th>
+            <th class="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase">Recipients</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-slate-100">
+          <% @custom_sms_campaigns.each do |campaign| %>
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                <%= campaign.created_at.strftime("%b %d, %Y") %>
+                <span class="block text-xs text-slate-400"><%= campaign.created_at.strftime("%H:%M") %></span>
+              </td>
+              <td class="px-6 py-4 text-sm text-slate-800">
+                <%= link_to truncate(campaign.body, length: 90), custom_notification_path(campaign), class: "font-medium text-blue-600 hover:text-blue-800" %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 capitalize"><%= campaign.audience %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700"><%= campaign.sender&.name.presence || campaign.sender&.email || "N/A" %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-slate-700"><%= campaign.sms_notifications.count %></td>
+            </tr>
+          <% end %>
+
+          <% if @custom_sms_campaigns.none? %>
+            <tr>
+              <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-500">No custom SMS sent yet.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
