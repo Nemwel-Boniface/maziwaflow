@@ -15,7 +15,9 @@
       data: {
         controller: "custom-notification-form",
         "custom-notification-form-base-limit-value": @base_body_limit,
-        "custom-notification-form-all-limit-value": @all_recipients_body_limit
+        "custom-notification-form-all-limit-value": @all_recipients_body_limit,
+        "custom-notification-form-max-sms-length-value": Maziwaflow::NotificationTemplates::MAX_SMS_LENGTH,
+        "custom-notification-form-sign-off-value": Maziwaflow::NotificationTemplates::SIGN_OFF
       } do %>
       <div>
         <p class="text-sm font-semibold text-slate-700 mb-2">Recipients</p>
@@ -40,7 +42,8 @@
                 data: {
                   action: "change->custom-notification-form#updateLimit",
                   "custom-notification-form-target": "recipient",
-                  max_body_length: Maziwaflow::NotificationTemplates.max_custom_body_length_for_name(customer.name)
+                  max_body_length: Maziwaflow::NotificationTemplates.max_custom_body_length_for_name(customer.name),
+                  customer_name: customer.name
                 } %>
               <span><%= customer.name %> (<%= customer.phone_number %>)</span>
             </label>
@@ -71,6 +74,14 @@
 
       <div class="pt-2">
         <%= submit_tag "Send Custom SMS", class: "w-full sm:w-auto inline-flex justify-center py-3 px-5 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 cursor-pointer transition-all active:scale-95" %>
+      </div>
+
+      <div class="pt-4 border-t border-slate-200">
+        <h3 class="text-sm font-semibold text-slate-700">Preview</h3>
+        <p class="mt-1 text-xs text-slate-500">Live preview for <span data-custom-notification-form-target="previewName">Customer</span></p>
+        <div class="mt-2 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+          <p class="text-sm text-slate-700" data-custom-notification-form-target="preview">Hi Customer, Friends at Maziwa flow</p>
+        </div>
       </div>
     <% end %>
   </div>
