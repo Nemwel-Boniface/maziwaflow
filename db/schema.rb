@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_05_184731) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_06_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "custom_sms_campaigns", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "audience", null: false
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.uuid "sender_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_custom_sms_campaigns_on_created_at"
+    t.index ["sender_id"], name: "index_custom_sms_campaigns_on_sender_id"
+  end
 
   create_table "customers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
@@ -62,6 +72,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_05_184731) do
 
   create_table "sms_notifications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.uuid "custom_sms_campaign_id"
     t.text "error"
     t.string "event", null: false
     t.text "message", null: false
@@ -72,6 +83,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_05_184731) do
     t.datetime "sent_at"
     t.string "status", default: "pending", null: false
     t.datetime "updated_at", null: false
+    t.index ["custom_sms_campaign_id"], name: "index_sms_notifications_on_custom_sms_campaign_id"
     t.index ["event"], name: "index_sms_notifications_on_event"
     t.index ["notifiable_type", "notifiable_id"], name: "index_sms_notifications_on_notifiable"
     t.index ["status"], name: "index_sms_notifications_on_status"
@@ -102,8 +114,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_05_184731) do
     t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id"
   end
 
+  add_foreign_key "custom_sms_campaigns", "users", column: "sender_id"
   add_foreign_key "payments", "customers"
   add_foreign_key "payments", "users"
   add_foreign_key "sales", "customers"
   add_foreign_key "sales", "users"
+  add_foreign_key "sms_notifications", "custom_sms_campaigns"
 end
